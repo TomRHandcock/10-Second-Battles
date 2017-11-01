@@ -27,7 +27,8 @@ function agentManager.update(dt)																								--This is the update pro
 				agent_collider_x2[agent] = (agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX + (34*0.5*map_scaleX)
 				agent_collider_y2[agent] = (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY + (34*0.5*map_scaleY)
 			 if agentManager.selectedAgent ~= 0 then																	--If there is an agent selected by the player then this variable will NOT be zero.
-				 moveAI(dt)																															--This procedure moves any agents controlled by AI, it does not do any pathfinding but uses a map in order to tell an agent where to go.
+				 moveAI(dt)
+				 agentManager.Shoot()																															--This procedure moves any agents controlled by AI, it does not do any pathfinding but uses a map in order to tell an agent where to go.
 
 				if agent_type[agent] == "enemy" and agent == agentManager.enemyPicked then			--This block of code controls which direction the agent will be looking, for now the agent will always look at the player.
 				 	deltaX1 = (agent_positionX[agentManager.selectedAgent]-1)*(tile_width * map_scaleX) - (agent_positionX[agentManager.enemyPicked]-1)*(tile_width * map_scaleX)
@@ -290,5 +291,20 @@ function agentManager.drawDead()																								--This procedure will si
 				love.graphics.draw( sprite[7], (agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX, (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY, 0, map_scaleX * 2, map_scaleY * 2,16,16)
 			end
 		end
+	end
+end
+
+function agentManager.Shoot()
+	if agentManager.agentCount > 0 then
+		for agent = 1,agentManager.agentCount do
+			if agent_type[agent] == "enemy" and agent == agentManager.enemyPicked then
+
+				if agent_positionX[agent] > agent_positionX[agentManager.selectedAgent] - 3 and agent_positionX[agent] < agent_positionX[agentManager.selectedAgent] + 3 then
+					if agent_positionY[agent] > agent_positionY[agentManager.selectedAgent] - 3 and agent_positionY[agent] < agent_positionY[agentManager.selectedAgent] + 3 then
+						bulletManager.spawn(agent_positionX[agent],agent_positionY[agent],agent)
+					end
+				end
+			end
+	  end
 	end
 end

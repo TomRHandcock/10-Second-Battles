@@ -72,7 +72,7 @@ function love.draw()
 end
 
 function drawUI()
-	love.graphics.print("Time : " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10)
+	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10)
 	--love.graphics.print("Frame: " .. replayManager.frame, 10, 70)
 	--love.graphics.print("FPS: " .. FPS, 10, 130)
 end
