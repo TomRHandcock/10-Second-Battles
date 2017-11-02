@@ -10,7 +10,7 @@ function bulletManager.load()
 end
 
 function bulletManager.spawn( x, y, agent)
-  if bulletCoolDown[agent] <= 0 then
+  if bulletCoolDown[agent] <= 0 and agent_rotation[agent] ~= nil then
     bulletCount = bulletCount + 1
     bulletX_velocity[bulletCount] = 300 * math.sin(agent_rotation[agent])
     bulletY_velocity[bulletCount] = -300 * math.cos(agent_rotation[agent])

@@ -137,6 +137,9 @@ function agentManager.drawAgents()																							--This function draws t
 		end
 	end
 	agentManager.drawDead()																												--This procedure will simply draw blood around a dead agent.
+	if agentManager.selectedAgent ~= 0 then
+		--clearSightLine(agentManager.enemyPicked,agentManager.selectedAgent)
+	end
 end
 
 function agentManager.move(dt)																									--This procedure is responsible for moving the agent the player controls. It is called from agentmanager.update()
@@ -297,14 +300,81 @@ end
 function agentManager.Shoot()
 	if agentManager.agentCount > 0 then
 		for agent = 1,agentManager.agentCount do
-			if agent_type[agent] == "enemy" and agent == agentManager.enemyPicked then
+			if agent_type[agent] == "enemy" and agent == agentManager.enemyPicked and agentManager.selectedAgent ~= 0 then
 
-				if agent_positionX[agent] > agent_positionX[agentManager.selectedAgent] - 3 and agent_positionX[agent] < agent_positionX[agentManager.selectedAgent] + 3 then
-					if agent_positionY[agent] > agent_positionY[agentManager.selectedAgent] - 3 and agent_positionY[agent] < agent_positionY[agentManager.selectedAgent] + 3 then
-						bulletManager.spawn(agent_positionX[agent],agent_positionY[agent],agent)
-					end
+				if clearSightLine(agentManager.enemyPicked,agentManager.selectedAgent) == true then
+					bulletManager.spawn(agent_positionX[agent],agent_positionY[agent],agent)
 				end
 			end
 	  end
 	end
+end
+
+function clearSightLine(agent, target)
+		sourceX = agent_positionX[agent]
+		sourceY = agent_positionY[agent]
+
+		targetX = agent_positionX[target]
+		targetY = agent_positionY[target]
+
+		if sourceX < targetX then
+			smallestX = math.floor(sourceX)
+			largestX = math.ceil(targetX)
+		else
+			smallestX = math.floor(targetX)
+			largestX = math.ceil(sourceX)
+		end
+
+		if sourceY < targetY then
+			smallestY = math.floor(sourceY)
+			largestY = math.ceil(targetY)
+		else
+			smallestY = math.floor(targetY)
+			largestY = math.ceil(sourceY)
+		end
+
+		clear = true
+
+		gradient = ((MapToY(sourceY)-MapToY(targetY)))/((MapToX(sourceX)-MapToX(targetX)))
+		y_offset = MapToY(sourceY) - (gradient * MapToX(sourceX))
+		--print("Gradient: " .. gradient .. " y_offset: " .. y_offset)
+		--love.graphics.setColor(255,0,0,255)
+		--love.graphics.circle("fill", (x-1)*(tile_width * map_scaleX) + map_offsetX, (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY, 5)
+
+		for y=1,love.graphics.getHeight() do
+			for x=map_offsetX,love.graphics.getWidth() do
+				if math.floor(y) == math.floor((x * gradient) + y_offset) then
+					if clear == true then
+						love.graphics.setColor(0, 255, 0, 255)
+					else
+						love.graphics.setColor(255, 0, 0, 255)
+					end
+					love.graphics.circle("fill", x, y, 1)
+					love.graphics.setColor(255, 255, 255, 255)
+					if YtoMap(y) >= smallestY and YtoMap(y) <= largestY and XtoMap(x) >= smallestX and XtoMap(x) <= largestX then
+						if map[math.floor(YtoMap(y))][math.floor(XtoMap(x))] ~= 0 then
+							--print("There is something in the way")
+							clear = false
+						end
+					end
+				end
+			end
+		end
+		return clear
+end
+
+function MapToX(x)
+	return (x-1)*(tile_width * map_scaleX) + map_offsetX
+end
+
+function MapToY(y)
+return (y-1)*(tile_height * map_scaleY) + map_offsetY
+end
+
+function XtoMap(x)
+	return (x - map_offsetX)/(tile_width*map_scaleX)+1
+end
+
+function YtoMap(y)
+	return (y - map_offsetY)/(tile_height*map_scaleY)+1
 end
