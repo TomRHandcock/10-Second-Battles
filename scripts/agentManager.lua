@@ -26,9 +26,9 @@ function agentManager.update(dt)																								--This is the update pro
 				agent_collider_y1[agent] = (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY - (34*0.5*map_scaleY)
 				agent_collider_x2[agent] = (agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX + (34*0.5*map_scaleX)
 				agent_collider_y2[agent] = (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY + (34*0.5*map_scaleY)
-			 if agentManager.selectedAgent ~= 0 then																	--If there is an agent selected by the player then this variable will NOT be zero.
+			 if agentManager.selectedAgent ~= 0 and agent_dead[agent] == -1 and agent ~= agentManager.selectedAgent then																	--If there is an agent selected by the player then this variable will NOT be zero.
 				 moveAI(dt)
-				 agentManager.Shoot()																															--This procedure moves any agents controlled by AI, it does not do any pathfinding but uses a map in order to tell an agent where to go.
+				 agentManager.Shoot(agent)																															--This procedure moves any agents controlled by AI, it does not do any pathfinding but uses a map in order to tell an agent where to go.
 
 				if agent_type[agent] == "enemy" and agent == agentManager.enemyPicked then			--This block of code controls which direction the agent will be looking, for now the agent will always look at the player.
 				 	deltaX1 = (agent_positionX[agentManager.selectedAgent]-1)*(tile_width * map_scaleX) - (agent_positionX[agentManager.enemyPicked]-1)*(tile_width * map_scaleX)
@@ -297,16 +297,11 @@ function agentManager.drawDead()																								--This procedure will si
 	end
 end
 
-function agentManager.Shoot()
-	if agentManager.agentCount > 0 then
-		for agent = 1,agentManager.agentCount do
-			if agent_type[agent] == "enemy" and agent == agentManager.enemyPicked and agentManager.selectedAgent ~= 0 then
-
-				if clearSightLine(agentManager.enemyPicked,agentManager.selectedAgent) == true then
-					bulletManager.spawn(agent_positionX[agent],agent_positionY[agent],agent)
-				end
-			end
-	  end
+function agentManager.Shoot(agent)
+	if bulletCoolDown[agent] <= 0  then
+		if clearSightLine(agentManager.enemyPicked,agentManager.selectedAgent) == true then
+			bulletManager.spawn(agent_positionX[agent],agent_positionY[agent],agent)
+		end
 	end
 end
 
@@ -349,7 +344,7 @@ function clearSightLine(agent, target)
 					else
 						love.graphics.setColor(255, 0, 0, 255)
 					end
-					love.graphics.circle("fill", x, y, 1)
+					--love.graphics.circle("fill", x, y, 1)
 					love.graphics.setColor(255, 255, 255, 255)
 					if YtoMap(y) >= smallestY and YtoMap(y) <= largestY and XtoMap(x) >= smallestX and XtoMap(x) <= largestX then
 						if map[math.floor(YtoMap(y))][math.floor(XtoMap(x))] ~= 0 then

@@ -14,7 +14,7 @@ function love.load()
 	pathfind.load()
 	bulletManager.load()
 	loadMap()
-	scene = 2																	--This value is the scene number, the scene being the game's state, such as the menu, or level selector.
+	scene = 1																	--This value is the scene number, the scene being the game's state, such as the menu, or level selector.
 	timeElapsed = 0
 	FPS = 0
 end
@@ -30,16 +30,18 @@ function love.update(dt)
 		end
 		mouseX = love.mouse.getX()
 		mouseY = love.mouse.getY()
-		if agentManager.selectedAgent ~= 0 and agent_dead[agentManager.selectedAgent] == -1 then
-			deltaX = mouseX - (agent_positionX[agentManager.selectedAgent]-1)*(tile_width * map_scaleX) - map_offsetX
-			deltaY = mouseY - (agent_positionY[agentManager.selectedAgent]-1)*(tile_height * map_scaleY) - map_offsetY
-			playerRotation = math.atan(deltaX/deltaY)
-			if mouseY >= (agent_positionY[agentManager.selectedAgent]-1)*(tile_height * map_scaleY) - map_offsetY then
-				playerRotation = math.pi - playerRotation
-			else
-				playerRotation = -playerRotation
+		if agentManager.selectedAgent ~= 0 then
+			if agent_dead[agentManager.selectedAgent] == -1 then
+				deltaX = mouseX - (agent_positionX[agentManager.selectedAgent]-1)*(tile_width * map_scaleX) - map_offsetX
+				deltaY = mouseY - (agent_positionY[agentManager.selectedAgent]-1)*(tile_height * map_scaleY) - map_offsetY
+				playerRotation = math.atan(deltaX/deltaY)
+				if mouseY >= (agent_positionY[agentManager.selectedAgent]-1)*(tile_height * map_scaleY) - map_offsetY then
+					playerRotation = math.pi - playerRotation
+				else
+					playerRotation = -playerRotation
+				end
+				agent_rotation[agentManager.selectedAgent] = playerRotation
 			end
-			agent_rotation[agentManager.selectedAgent] = playerRotation
 
 			if love.mouse.isDown(1) then
 				bulletManager.spawn(agent_positionX[agentManager.selectedAgent],agent_positionY[agentManager.selectedAgent],agentManager.selectedAgent)
@@ -68,13 +70,15 @@ function love.draw()
 		agentManager.drawAgents()								--This function is handled by the Agent Manager, it just draws the agents.
 		bulletManager.draw()
 		drawUI()
+	elseif scene == 1 then
+		drawMenu()
 	end
 end
 
 function drawUI()
 	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10)
 	--love.graphics.print("Frame: " .. replayManager.frame, 10, 70)
-	--love.graphics.print("FPS: " .. FPS, 10, 130)
+	love.graphics.print("FPS: " .. FPS, 10, 70)
 end
 
 function loadAssets()
@@ -91,7 +95,8 @@ function loadAssets()
 	sprite[5] = love.graphics.newImage("img/Arrow.png")
 	sprite[6] = love.graphics.newImage("img/bullet.png")
 	sprite[7] = love.graphics.newImage("img/blood.png")
-	font = love.graphics.newFont("font/BadMofo.ttf", 60)
+	titleScreen = love.graphics.newImage("img/TitleScreen.png")
+	font = love.graphics.newFont("font/BadMofo.ttf", 90)
 	love.graphics.setFont(font)
 end
 
@@ -138,4 +143,11 @@ function love.keyreleased(key)
 	if key == "f1" then
 		agentManager.selectedAgent = -1
 	end
+end
+
+function drawMenu()
+	love.graphics.draw(titleScreen, (love.graphics.getWidth()-titleScreen:getWidth()*2/3)/2, 0, 0, 2/3, 2/3)
+	love.graphics.setColor(0, 0, 0, 255)
+	love.graphics.print("10 Second Battles", love.graphics.getWidth()/2-(602/2), love.graphics.getHeight()/4)
+	love.graphics.setColor(255, 255,255, 255)
 end

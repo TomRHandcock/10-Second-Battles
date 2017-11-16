@@ -18,7 +18,7 @@ function getMap()		--This function simply assigns the blank map to the table "ma
 	}
 	agentManager.spawnAgent(2.5,2.5,"player")
 	agentManager.spawnAgent(6.5,7.5,"player")
-	agentManager.spawnAgent(10.5,10.5,"enemy")
+	agentManager.spawnAgent(4.5,13.7,"enemy")
 	agentManager.spawnAgent(13.5,10.5,"enemy")
 end
 
