@@ -17,6 +17,7 @@ function love.load()
 	scene = 1																	--This value is the scene number, the scene being the game's state, such as the menu, or level selector.
 	timeElapsed = 0
 	FPS = 0
+	debug_pathfind = false
 end
 
 function love.update(dt)
@@ -58,12 +59,12 @@ function love.draw()
 		for y=1,height do												--These two lines loop through every tile on the map.
 			for x=1,width do
 				love.graphics.draw(tile[map[y][x]],(x-1)*(tile_width * map_scaleX) + map_offsetX,(y-1)*(tile_height * map_scaleY) + map_offsetY, 0, map_scaleX, map_scaleY)			--This line draws the tiles.
-				if h_score[y][x] == desired_h_score then
-					--love.graphics.setColor(0, 255, 0, 255)
-					--love.graphics.draw(sprite[5],(x-0.5)*(tile_width * map_scaleX) + map_offsetX,(y-0.5)*(tile_height * map_scaleY) + map_offsetY, (path[y][x]-1)*(math.pi/2), map_scaleX*0.8, map_scaleY*0.8, 17, 17)
-					--love.graphics.setColor(255, 0, 0, 255)
-					--love.graphics.print(path[y][x],(x-0.5)*(tile_width * map_scaleX) + map_offsetX,(y-0.5)*(tile_height * map_scaleY) + map_offsetY)
-					--love.graphics.setColor(255, 255, 255, 255)
+				if h_score[y][x] == desired_h_score and debug_pathfind == true then
+					love.graphics.setColor(0, 255, 0, 255)
+					love.graphics.draw(sprite[5],(x-0.5)*(tile_width * map_scaleX) + map_offsetX,(y-0.5)*(tile_height * map_scaleY) + map_offsetY, (path[y][x]-1)*(math.pi/2), map_scaleX*0.8, map_scaleY*0.8, 17, 17)
+					love.graphics.setColor(255, 0, 0, 255)
+					love.graphics.print(path[y][x],(x-0.5)*(tile_width * map_scaleX) + map_offsetX,(y-0.5)*(tile_height * map_scaleY) + map_offsetY)
+					love.graphics.setColor(255, 255, 255, 255)
 				end
 			end
 		end
@@ -72,6 +73,8 @@ function love.draw()
 		drawUI()
 	elseif scene == 1 then
 		drawMenu()
+	elseif scene == 1.1 then
+		drawLevels()
 	end
 end
 
@@ -96,6 +99,8 @@ function loadAssets()
 	sprite[6] = love.graphics.newImage("img/bullet.png")
 	sprite[7] = love.graphics.newImage("img/blood.png")
 	titleScreen = love.graphics.newImage("img/TitleScreen.png")
+	start_button = love.graphics.newImage("img/Start Button.png")
+	quit_button = love.graphics.newImage("img/Quit Button.png")
 	font = love.graphics.newFont("font/BadMofo.ttf", 90)
 	love.graphics.setFont(font)
 end
@@ -136,12 +141,26 @@ function love.mousereleased(x, y, button, isTouch)
 					end
 				end
 			end
+		elseif scene == 1 then
+			if x >= love.graphics.getWidth()/2-403*0.25 and x <= love.graphics.getWidth()/2+403*0.25 then
+				if y >= love.graphics.getHeight()/2 and y <= love.graphics.getHeight()/2 + 308*0.25 then
+					scene = 2
+				elseif y >= love.graphics.getHeight()/2 + 100 and y <= love.graphics.getHeight()/2 +100 + 308*0.25 then
+					love.event.quit()
+				end
+			end
 		end
 end
 
 function love.keyreleased(key)
 	if key == "f1" then
 		agentManager.selectedAgent = -1
+	elseif key == "f2" then
+		if debug_pathfind == true then
+			debug_pathfind = false
+		else
+			debug_pathfind = true
+		end
 	end
 end
 
@@ -150,4 +169,10 @@ function drawMenu()
 	love.graphics.setColor(0, 0, 0, 255)
 	love.graphics.print("10 Second Battles", love.graphics.getWidth()/2-(602/2), love.graphics.getHeight()/4)
 	love.graphics.setColor(255, 255,255, 255)
+	love.graphics.draw(start_button, love.graphics.getWidth()/2-403*0.25, love.graphics.getHeight()/2, 0, 0.25, 0.25)
+	love.graphics.draw(quit_button, love.graphics.getWidth()/2-403*0.25, love.graphics.getHeight()/2 + 100, 0, 0.25, 0.25)
+end
+
+function drawLevels()
+	love.graphics.draw(titleScreen, (love.graphics.getWidth()-titleScreen:getWidth()*2/3)/2, 0, 0, 2/3, 2/3)
 end
