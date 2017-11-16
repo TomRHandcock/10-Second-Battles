@@ -44,6 +44,7 @@ function replayManager.record()
     replay_rotation[agentManager.selectedAgent][math.floor(replayManager.timeLeft*100)/100] = agent_rotation[agentManager.selectedAgent]
     if replay_bullet[agentManager.selectedAgent][math.floor(replayManager.timeLeft*100)/100] ~= true then
       replay_bullet[agentManager.selectedAgent][math.floor(replayManager.timeLeft*100)/100] = false
+      print("Not shooting now")
     end
     replay_positionX[agentManager.enemyPicked][math.floor(replayManager.timeLeft*100)/100] = agent_positionX[agentManager.enemyPicked]
     replay_positionY[agentManager.enemyPicked][math.floor(replayManager.timeLeft*100)/100] = agent_positionY[agentManager.enemyPicked]
@@ -62,7 +63,7 @@ function replayManager.play()
               bulletManager.spawn(agent_positionX[i],agent_positionY[i],i)
             end
           end
-          print(agent_type[i] .. " died on frame " .. agent_dead[i])
+
           if agent_dead[i] >= replayManager.frame or agent_dead[i] == -1 then
             agent_positionX[i] = replay_positionX[i][math.floor(replayManager.timeLeft*100)/100]
             agent_positionY[i] = replay_positionY[i][math.floor(replayManager.timeLeft*100)/100]

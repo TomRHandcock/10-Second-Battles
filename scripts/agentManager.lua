@@ -173,6 +173,7 @@ function agentManager.move(dt)																									--This procedure is respo
 end
 
 function pathfind.find( x1, y1, x2, y2, agentNumber )														--This is the pathfind procedure, when it is called it requires the current position of the player (first two values),  the desired position of the player (next two values) and the id number of the player.
+	print("Finding a path")
 	if love.filesystem.exists("agent"..agentNumber..".txt") == true then													--This if statement will either create or open a file which contains a map of the path the agent should take.
 		pathfind_data[agentNumber] = love.filesystem.newFile("agent"..agentNumber..".txt","w")
 	else
@@ -193,47 +194,54 @@ function pathfind.find( x1, y1, x2, y2, agentNumber )														--This is the
 	for i=1,math.ceil(math.sqrt((height^2)+(width^2))) do													--This loop will run a number of times equivilent to the length of the longest path from any two points on the map to ensure every tile has been considered.
 		for y=1,height do																														--These next loops will run through every tile on the map.
 			for x=1,width do
-				if f_score[y][x] ~= 0 then																							--If a tile's f-score is not zero then this means the tile's f-score value has been set already by the function (hence why the starting tile is 1)
+
+				if map[y][x] ~= 0 then
+					h_score[y][x] = 100
+					f_score[y][x] = 100
+					g_score[y][x] = 100
+				end
+
+				if f_score[y][x] ~= 0 and f_score[y][x] ~= 100 then																							--If a tile's f-score is not zero then this means the tile's f-score value has been set already by the function (hence why the starting tile is 1)
 					if y ~= height then																										--This statement checks that the tile is not on the bottom row of the map, if it is then the if statement will run, if it is at the bottom of the map then the statement will not be triggered as there is no row below the bottom of the map.
-						if f_score[y+1][x] == 0 then																				--If the f-score of the tile below has not already been set then the pathfind procedure will set it to the f-score of the current tile plus one (the cost of moving to that tile)
+						if f_score[y+1][x] == 0 and f_score[y+1][x] ~= 100 then																				--If the f-score of the tile below has not already been set then the pathfind procedure will set it to the f-score of the current tile plus one (the cost of moving to that tile)
 							f_score[y+1][x] = f_score[y][x] + 1
 						end
 					end
 					if y ~= 1 then																												--This is a duplication of the previous if statement but for the tile immediately above the current tile.
-						if f_score[y-1][x] == 0 then
+						if f_score[y-1][x] == 0 and f_score[y-1][x] ~= 100 then
 							f_score[y-1][x] = f_score[y][x] + 1
 						end
 					end
 					if x ~= width then																										--These two if statements deal with the tiles either side of the tile in a similar fashion to the above two.
-						if f_score[y][x+1] == 0 then
+						if f_score[y][x+1] == 0 and f_score[y][x+1] ~= 100 then
 							f_score[y][x+1] = f_score[y][x] + 1
 						end
 					end
 					if x ~= 1 then
-						if f_score[y][x-1] == 0 then
+						if f_score[y][x-1] == 0 and f_score[y][x-1] ~= 100 then
 							f_score[y][x-1] = f_score[y][x] + 1
 						end
 					end
 				end
 				--g_score																																--This repeats the previous 24 lines but for the g-score instead (the cost of moving from the tile to the goal)
-				if g_score[y][x] ~= 0 then
+				if g_score[y][x] ~= 0 and g_score[y][x] ~= 100 then
 					if y ~= height then
-						if g_score[y+1][x] == 0 then
+						if g_score[y+1][x] == 0 and g_score[y+1][x] ~= 100 then
 							g_score[y+1][x] = g_score[y][x] + 1
 						end
 					end
 					if y ~= 1 then
-						if g_score[y-1][x] == 0 then
+						if g_score[y-1][x] == 0 and g_score[y-1][x] ~= 100 then
 							g_score[y-1][x] = g_score[y][x] + 1
 						end
 					end
 					if x ~= width then
-						if g_score[y][x+1] == 0 then
+						if g_score[y][x+1] == 0 and g_score[y][x+1] ~= 100 then
 							g_score[y][x+1] = g_score[y][x] + 1
 						end
 					end
 					if x ~= 1 then
-						if g_score[y][x-1] == 0 then
+						if g_score[y][x-1] == 0 and g_score[y][x-1] ~= 100 then
 							g_score[y][x-1] = g_score[y][x] + 1
 						end
 					end
@@ -244,11 +252,6 @@ function pathfind.find( x1, y1, x2, y2, agentNumber )														--This is the
 	for y=1,height do																															--For all tiles in the map, if a tile is not clear then it is not possible to move to it, these values that are set will eliminate that tile from being a potential path.
 		for x=1,width do
 			h_score[y][x] = f_score[y][x] + g_score[y][x]
-			if map[y][x] ~= 0 then
-				h_score[y][x] = 100
-				f_score[y][x] = 50
-				g_score[y][x] = 50
-			end
 			if y == y1 and x == x1 then																								--If the current tile is the starting tile then the h-score of this tile will be the same for all tiles along the path.
 				desired_h_score = h_score[y][x]
 			end

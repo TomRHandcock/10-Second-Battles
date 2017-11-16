@@ -17,7 +17,6 @@ function bulletManager.spawn( x, y, agent)
     bulletX[bulletCount] = (agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX
     bulletY[bulletCount] = (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY
     bullet_rotation[bulletCount] = agent_rotation[agent]
-    print("Bullet number: " .. bulletCount .. " spawned")
     bulletCoolDown[agent] = 0.3
     replay_bullet[agent][replayManager.frame] = true
     bullet_owner[bulletCount] = agent
@@ -66,8 +65,10 @@ function bulletManager.collision()
           if bulletX[bullet] > agent_collider_x1[agent] and bulletX[bullet] < agent_collider_x2[agent] then
 						if bulletY[bullet] > agent_collider_y1[agent] and bulletY[bullet] < agent_collider_y2[agent] then
               if bullet_owner[bullet] ~= agent and agent_hasBeenSelected[agent] == true then
-                print("A bullet hit " .. agent)
-                agent_dead[agent] = replayManager.frame
+                if agent_hasBeenSelected[agent] == true then
+                  print("A bullet hit " .. agent)
+                  agent_dead[agent] = replayManager.frame
+                end
               end
             end
           end
