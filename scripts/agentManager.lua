@@ -17,6 +17,8 @@ function agentManager.load()
 	pathfind_data = {}
 	agentManager.speed = 3
 	agent_dead = {}
+	agentManager.player_count = 0
+	agentManager.timeSinceAIUpdate = 0
 end
 
 function agentManager.update(dt)																								--This is the update procedure for the agent manager module. This procedure has a parameter for detla time - the time elapsed betweeen frames
@@ -43,6 +45,14 @@ function agentManager.update(dt)																								--This is the update pro
 			 	 	end
 			 	end
 			end
+
+			if agentManager.selectedAgent ~= 0 then
+				agentManager.timeSinceAIUpdate = agentManager.timeSinceAIUpdate + 1
+				if agentManager.timeSinceAIUpdate >= 0.5 then
+					pathfind.find(math.floor(agent_positionX[agentManager.enemyPicked]),math.floor(agent_positionY[agentManager.enemyPicked]),math.floor(agent_positionX[agentManager.selectedAgent]),math.floor(agent_positionY[agentManager.selectedAgent]),agentManager.enemyPicked)
+					agentManager.timeSinceAIUpdate = 0
+				end
+			end
 		end
 		agentManager.move(dt)																												--This procedure is responsible for moving the player.
 end
@@ -63,6 +73,8 @@ function agentManager.spawnAgent(x, y, agentType, desiredX, desiredY)						--Thi
 			desiredX = x
 			desiredY = y
 		end
+	else
+		agentManager.player_count = agentManager.player_count + 1
 	end
 	agentManager.agentCount = agentManager.agentCount + 1													--This line increases the agent count variable by 1, this variable is the number of agents.
 	agent_positionX[agentManager.agentCount] = x																	--The next two lines set the agent's position to what has been specified either by calling the function or the default values.
@@ -78,6 +90,7 @@ end
 function agentManager.loadMap()
 	agentManager.agentCount = 0																										--This line will set (or reset) the agent count value to zero.
 	agentManager.selectedAgent = 0
+	agentManager.player_count = 0
 end
 
 function agentManager.reset()																										--This procedure simply resets all the agent positions.

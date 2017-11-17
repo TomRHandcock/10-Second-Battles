@@ -20,22 +20,22 @@ function love.load()
 	debug_pathfind = false
 end
 
-function love.update(dt)
-	if scene == 2 then
-		agentManager.update(dt)
+function love.update(dt)																												--This function is called once per frame.
+	if scene == 2 then																														--Checking that the game scene is active.
+		agentManager.update(dt)																											--These two lines are delegating relevent tasks to different function.
 		replayManager.update(dt)
-		timeElapsed = timeElapsed + dt
+		timeElapsed = timeElapsed + dt																							--These next 5 lines calculate the FPS.
 		if timeElapsed >= 1 then
 			FPS = math.floor(1 / dt)
 			timeElapsed = 0
 		end
-		mouseX = love.mouse.getX()
+		mouseX = love.mouse.getX()																									--Updating the mouse position.
 		mouseY = love.mouse.getY()
-		if agentManager.selectedAgent ~= 0 then
+		if agentManager.selectedAgent ~= 0 then																			--Updating the rotation of the controlled agent.
 			if agent_dead[agentManager.selectedAgent] == -1 then
 				deltaX = mouseX - (agent_positionX[agentManager.selectedAgent]-1)*(tile_width * map_scaleX) - map_offsetX
 				deltaY = mouseY - (agent_positionY[agentManager.selectedAgent]-1)*(tile_height * map_scaleY) - map_offsetY
-				playerRotation = math.atan(deltaX/deltaY)
+				playerRotation = math.atan(deltaX/deltaY)																--The angle of the player is found by using some simply trigonometry, it is then adjusted to ensure this angle is in the right quartile.
 				if mouseY >= (agent_positionY[agentManager.selectedAgent]-1)*(tile_height * map_scaleY) - map_offsetY then
 					playerRotation = math.pi - playerRotation
 				else
@@ -44,7 +44,7 @@ function love.update(dt)
 				agent_rotation[agentManager.selectedAgent] = playerRotation
 			end
 
-			if love.mouse.isDown(1) then
+			if love.mouse.isDown(1) then																							--If the left mouse button is pressed then the bullet system will spawn a bullet at the agent's position.
 				bulletManager.spawn(agent_positionX[agentManager.selectedAgent],agent_positionY[agentManager.selectedAgent],agentManager.selectedAgent)
 			end
 			bulletManager.update()
@@ -82,6 +82,9 @@ function drawUI()
 	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10)
 	--love.graphics.print("Frame: " .. replayManager.frame, 10, 70)
 	love.graphics.print("FPS: " .. FPS, 10, 70)
+	if agentManager.selectedAgent == 0 and agentManager.player_count == replayManager.round_count then
+		endGame()
+	end
 end
 
 function loadAssets()
@@ -133,6 +136,7 @@ function love.mousereleased(x, y, button, isTouch)
 									replay_rotation[agentManager.selectedAgent] = {}
 									replay_bullet[agentManager.selectedAgent] = {}
 									agent_hasBeenSelected[agentManager.selectedAgent] = true
+									replayManager.round_count = replayManager.round_count + 1
 								end
 							else
 								print("Please select a valid agent")

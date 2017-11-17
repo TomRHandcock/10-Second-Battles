@@ -6,6 +6,7 @@ function replayManager.load()
     replay_positionY = {}
     replay_rotation = {}
     replay_bullet = {}
+    replayManager.round_count = 0
 end
 
 

@@ -35,3 +35,9 @@ function moveAI(dt)
     end
   end
 end
+
+function endGame()
+  love.graphics.setColor(0,0,0,255)
+  love.graphics.print("Game Over", love.graphics.getWidth()/2, love.graphics.getHeight()/2)
+  love.graphics.setColor(255, 255, 255, 255)
+end
