@@ -1,6 +1,7 @@
 # 10-Second-Battles
 This is a small project which I like to work on in my free time. It uses the Love2d engine which is an open-source framework built around
-the lua language.
+the lua language. PLEASE NOTE: This game is still in development so it is likely there will be bugs etc. As development continues these
+will be found and sorted out.
 
 How to Execute the Game:
 
@@ -22,3 +23,5 @@ direction of your mouse cursor and clicking will allow your player to shoot.
 Upon the completion of the first round, you will have the opportunity to select another player. Notice that the player you picked previously
 if 'greyed out', this means that you have already picked that player and they cannot be picked again. Once you have picked your next
 player a new round will begin.
+
+Thank you for your support in taking a look at this project.
