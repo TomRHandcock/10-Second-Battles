@@ -48,11 +48,11 @@ function love.update(dt)																												--This function is called on
 			if love.mouse.isDown(1) then																							--If the left mouse button is pressed then the bullet system will spawn a bullet at the agent's position.
 				bulletManager.spawn(agent_positionX[agentManager.selectedAgent],agent_positionY[agentManager.selectedAgent],agentManager.selectedAgent)
 			end
-			bulletManager.update()
+			bulletManager.update()																										--This function runs every frame and is responsible for updating bullet positions according to their velocities.
 		end
-		bulletManager.collision()
+		bulletManager.collision()																										--This function continually checks if the bullets are colliding with players and takes appropriate actions.
 	end
-	deltaTime = dt
+	deltaTime = dt																																--This is assigning delta time to a global variable.
 end
 
 function love.draw()
@@ -60,31 +60,40 @@ function love.draw()
 		for y=1,height do												--These two lines loop through every tile on the map.
 			for x=1,width do
 				love.graphics.draw(tile[map[y][x]],(x-1)*(tile_width * map_scaleX) + map_offsetX,(y-1)*(tile_height * map_scaleY) + map_offsetY, 0, map_scaleX, map_scaleY)			--This line draws the tiles.
-				if h_score[y][x] == desired_h_score and debug_pathfind == true then
-					love.graphics.setColor(0, 255, 0, 255)
-					love.graphics.draw(sprite[5],(x-0.5)*(tile_width * map_scaleX) + map_offsetX,(y-0.5)*(tile_height * map_scaleY) + map_offsetY, (path[y][x]-1)*(math.pi/2), map_scaleX*0.8, map_scaleY*0.8, 17, 17)
-					love.graphics.setColor(255, 0, 0, 255)
+				if h_score[y][x] == desired_h_score and debug_pathfind == true then			--If the corresponding debug option is turned on AND the tile is on the quickest path for the agent then this if statement will trigger.
+					love.graphics.setColor(0, 255, 0, 255)		--Green
+					love.graphics.draw(sprite[5],(x-0.5)*(tile_width * map_scaleX) + map_offsetX,(y-0.5)*(tile_height * map_scaleY) + map_offsetY, (path[y][x]-1)*(math.pi/2), map_scaleX*0.8, map_scaleY*0.8, 17, 17)		--This line will draw a directional arrow on each of the tiles it is passed, the arrow will point in the direction an agent should take in order to get from A to B as quickly as possible.
+					love.graphics.setColor(255, 0, 0, 255)		--Red
 					love.graphics.print(path[y][x],(x-0.5)*(tile_width * map_scaleX) + map_offsetX,(y-0.5)*(tile_height * map_scaleY) + map_offsetY)
-					love.graphics.setColor(255, 255, 255, 255)
+					love.graphics.setColor(255, 255, 255, 255)		--White
 				end
 			end
 		end
-		agentManager.drawAgents()								--This function is handled by the Agent Manager, it just draws the agents.
-		bulletManager.draw()
-		drawUI()
-	elseif scene == 1 then
+		agentManager.drawAgents()																										--This function is handled by the Agent Manager, it just draws the agents.
+		bulletManager.draw()																												--This function will draw the bullets at their respective positions
+		drawUI()																																		--This function draws the UI elements.
+	elseif scene == 1 then																												--If the scene is the menu then the menu elements will be drawn by the following function.
 		drawMenu()
-	elseif scene == 1.1 then
+	elseif scene == 1.1 then																											--If the scene is on the level selection scene then the corresponding UI elements will be draw by the following function.
 		drawLevels()
 	end
 end
 
+<<<<<<< HEAD
 function drawUI()
 	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10, 0, 0.5, 0.5)
 	--love.graphics.print("Frame: " .. replayManager.frame, 10, 70)
 	love.graphics.print("FPS: " .. FPS, 10, 70, 0, 0.5, 0.5)
 	if agentManager.selectedAgent == 0 and agentManager.player_count == replayManager.round_count then
 		endGame()
+=======
+function drawUI()																																--This function is called on line 73 and draws the UI elements in game.
+	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10)		--This line will display the 'Time Left' for a round.
+	--love.graphics.print("Frame: " .. replayManager.frame, 10, 70)
+	love.graphics.print("FPS: " .. FPS, 10, 70)																									--This line will display the frames per second.
+	if agentManager.selectedAgent == 0 and agentManager.player_count == replayManager.round_count then			--The game is over when the number of rounds played = the number of players (since you can only play once with each player) AND an agent is not selected.
+		endGame()																																		--This function draws the 'end of game' UI
+>>>>>>> 8abbdf8843c24de0f053618e22a03fdafb545c20
 	end
 end
 
@@ -94,19 +103,19 @@ function loadAssets()
 		tile[i] = love.graphics.newImage("img/tile" .. i .. ".png")				--This function loops through the tiles in the range and adds them to a "dictionary" of tiles
 	end
 	sprite = {}
-	sprite[0] = love.graphics.newImage("img/Character.png")
-	sprite[1] = love.graphics.newImage("img/Direction Arrow.png")
-	sprite[2] = love.graphics.newImage("img/InactiveCharacter.png")
-	sprite[3] = love.graphics.newImage("img/Enemy.png")
-	sprite[4] = love.graphics.newImage("img/InactiveEnemy.png")
-	sprite[5] = love.graphics.newImage("img/Arrow.png")
-	sprite[6] = love.graphics.newImage("img/bullet.png")
-	sprite[7] = love.graphics.newImage("img/blood.png")
-	titleScreen = love.graphics.newImage("img/TitleScreen.png")
-	start_button = love.graphics.newImage("img/Start Button.png")
-	quit_button = love.graphics.newImage("img/Quit Button.png")
-	font = love.graphics.newFont("font/BadMofo.ttf", 90)
-	love.graphics.setFont(font)
+	sprite[0] = love.graphics.newImage("img/Character.png")												--Character Image
+	sprite[1] = love.graphics.newImage("img/Direction Arrow.png")									--Image used for player rotation.
+	sprite[2] = love.graphics.newImage("img/InactiveCharacter.png")								--Inactive character image.
+	sprite[3] = love.graphics.newImage("img/Enemy.png")														--Enemy image.
+	sprite[4] = love.graphics.newImage("img/InactiveEnemy.png")										--Inactive enemy player image.
+	sprite[5] = love.graphics.newImage("img/Arrow.png")														--Pathfinding arrow image.
+	sprite[6] = love.graphics.newImage("img/bullet.png")													--Bullet sprite.
+	sprite[7] = love.graphics.newImage("img/blood.png")														--Blood decal image.
+	titleScreen = love.graphics.newImage("img/TitleScreen.png")										--Background image for title screen.
+	start_button = love.graphics.newImage("img/Start Button.png")									--Start button on menu.
+	quit_button = love.graphics.newImage("img/Quit Button.png")										--Quit button on menu.
+	font = love.graphics.newFont("font/BadMofo.ttf", 90)													--The font used for most of the game.
+	love.graphics.setFont(font)																										--Setting this font to be the font used by default.
 end
 
 function loadMap()
@@ -114,9 +123,9 @@ function loadMap()
 	height = 15		-- There is the width and height of the map and the width and height of the tiles.
 	tile_height = 32
 	tile_width = 32
-	map_scaleX = 1.5
+	map_scaleX = 1.5		--This is the scale that the map will be drawn at in both X and Y.
 	map_scaleY = 1.5
-	map_offsetX = (love.graphics.getWidth()/2 - (tile_width*map_scaleX*width) / 2) -- This function places the map in the middle of the screen by tweaking the offset, it subtracts half the width of the map from the centre of the screen
+	map_offsetX = (love.graphics.getWidth()/2 - (tile_width*map_scaleX*width) / 2) -- This line places the map in the middle of the screen by tweaking the offset, it subtracts half the width of the map from the centre of the screen
 	map_offsetY = 0
 	print("Checking for directories...")
 	if love.filesystem.exists("level/") == false then
@@ -127,13 +136,13 @@ function loadMap()
 	getMap()
 end
 
-function love.mousereleased(x, y, button, isTouch)
-		if scene == 2 then
-			if agentManager.agentCount > 0 then
+function love.mousereleased(x, y, button, isTouch)															--Upon the mouse being released from a press, this functnio will be called.
+		if scene == 2 then																													--If the scene is currently in the game then the statement will be triggered.
+			if agentManager.agentCount > 0 then																				--These two lines will loop through agents if there are any.
 				for i=1,agentManager.agentCount do
-					if x > agent_collider_x1[i] and x < agent_collider_x2[i] then
+					if x > agent_collider_x1[i] and x < agent_collider_x2[i] then					--These two lines will check if the mouse was released within the collision boxes of an agent that is defined in the agentManager.update() function.
 						if y > agent_collider_y1[i] and y < agent_collider_y2[i] then
-							if agent_type[i] == "player" then
+							if agent_type[i] == "player" then																	--Checks if the agent that was selected was a playerable agent.
 								if agentManager.selectedAgent == 0 then
 									agentManager.selectedAgent = i
 									pickEnemy()
