@@ -8,10 +8,8 @@ function love.load()
 	require("scripts/replayManager")
 	require("scripts/roundManager")
 	require("scripts/bulletmanager")
-	require("level/level0")
 	agentManager.load()												--This function instantiates the agent manager which handles all the details of the agents and pathfinding.
 	replayManager.load()
-	pathfind.load()
 	bulletManager.load()
 	loadMap()
 	scene = 1																	--This value is the scene number, the scene being the game's state, such as the menu, or level selector.
@@ -79,21 +77,12 @@ function love.draw()
 	end
 end
 
-<<<<<<< HEAD
-function drawUI()
-	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10, 0, 0.5, 0.5)
-	--love.graphics.print("Frame: " .. replayManager.frame, 10, 70)
-	love.graphics.print("FPS: " .. FPS, 10, 70, 0, 0.5, 0.5)
-	if agentManager.selectedAgent == 0 and agentManager.player_count == replayManager.round_count then
-		endGame()
-=======
 function drawUI()																																--This function is called on line 73 and draws the UI elements in game.
-	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10)		--This line will display the 'Time Left' for a round.
+	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10, 0, 0.5, 0.5)		--This line will display the 'Time Left' for a round.
 	--love.graphics.print("Frame: " .. replayManager.frame, 10, 70)
-	love.graphics.print("FPS: " .. FPS, 10, 70)																									--This line will display the frames per second.
+	love.graphics.print("FPS: " .. FPS, 10, 70, 0, 0.5, 0.5)																									--This line will display the frames per second.
 	if agentManager.selectedAgent == 0 and agentManager.player_count == replayManager.round_count then			--The game is over when the number of rounds played = the number of players (since you can only play once with each player) AND an agent is not selected.
 		endGame()																																		--This function draws the 'end of game' UI
->>>>>>> 8abbdf8843c24de0f053618e22a03fdafb545c20
 	end
 end
 
@@ -133,7 +122,6 @@ function loadMap()
 		print("No level directory!")
 	end
 	map_pool = love.filesystem.getDirectoryItems("level")
-	getMap()
 end
 
 function love.mousereleased(x, y, button, isTouch)															--Upon the mouse being released from a press, this functnio will be called.
@@ -167,6 +155,17 @@ function love.mousereleased(x, y, button, isTouch)															--Upon the mous
 					scene = 1.1
 				elseif y >= love.graphics.getHeight()/2 + 100 and y <= love.graphics.getHeight()/2 +100 + 308*0.25 then
 					love.event.quit()
+				end
+			end
+		elseif scene == 1.1 then
+			for i = 1, #map_pool do
+				if x >= 50 and x <= 350 then
+					if y >= (i*10)+((i-1)*70)+ 130 and y <= (i*10)+((i-1)*70)+ 200 then
+						require("level/" .. map_pool[i]:sub(1,map_pool[i]:len()-4))
+						getMap()
+						pathfind.load()
+						scene = 2
+					end
 				end
 			end
 		end
