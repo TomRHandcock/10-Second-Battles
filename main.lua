@@ -18,6 +18,7 @@ function love.load()
 	timeElapsed = 0
 	FPS = 0
 	debug_pathfind = false
+	debug_player = false
 end
 
 function love.update(dt)																												--This function is called once per frame.
@@ -79,9 +80,9 @@ function love.draw()
 end
 
 function drawUI()
-	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10)
+	love.graphics.print("Time Left: " .. (math.floor(replayManager.timeLeft*10))/10, 10, 10, 0, 0.5, 0.5)
 	--love.graphics.print("Frame: " .. replayManager.frame, 10, 70)
-	love.graphics.print("FPS: " .. FPS, 10, 70)
+	love.graphics.print("FPS: " .. FPS, 10, 70, 0, 0.5, 0.5)
 	if agentManager.selectedAgent == 0 and agentManager.player_count == replayManager.round_count then
 		endGame()
 	end
@@ -117,6 +118,12 @@ function loadMap()
 	map_scaleY = 1.5
 	map_offsetX = (love.graphics.getWidth()/2 - (tile_width*map_scaleX*width) / 2) -- This function places the map in the middle of the screen by tweaking the offset, it subtracts half the width of the map from the centre of the screen
 	map_offsetY = 0
+	print("Checking for directories...")
+	if love.filesystem.exists("level/") == false then
+		love.filesystem.createDirectory("level")
+		print("No level directory!")
+	end
+	map_pool = love.filesystem.getDirectoryItems("level")
 	getMap()
 end
 
@@ -148,7 +155,7 @@ function love.mousereleased(x, y, button, isTouch)
 		elseif scene == 1 then
 			if x >= love.graphics.getWidth()/2-403*0.25 and x <= love.graphics.getWidth()/2+403*0.25 then
 				if y >= love.graphics.getHeight()/2 and y <= love.graphics.getHeight()/2 + 308*0.25 then
-					scene = 2
+					scene = 1.1
 				elseif y >= love.graphics.getHeight()/2 + 100 and y <= love.graphics.getHeight()/2 +100 + 308*0.25 then
 					love.event.quit()
 				end
@@ -165,6 +172,12 @@ function love.keyreleased(key)
 		else
 			debug_pathfind = true
 		end
+	elseif key == "f3" then
+		if debug_player then
+			debug_player = false
+		else
+			debug_player = true
+		end
 	end
 end
 
@@ -179,4 +192,20 @@ end
 
 function drawLevels()
 	love.graphics.draw(titleScreen, (love.graphics.getWidth()-titleScreen:getWidth()*2/3)/2, 0, 0, 2/3, 2/3)
+	love.graphics.setColor(0, 0, 0, 255)
+	love.graphics.print("Select a level", 50, 30)
+	for key, value in pairs(map_pool) do
+		love.graphics.setColor(255, 255, 255, 255)
+		love.graphics.rectangle("fill", 50, (key*10)+((key-1)*70)+ 130, 300, 70)
+		love.graphics.setColor(46, 49, 146, 255)
+		love.graphics.setLineWidth(5)
+		love.graphics.rectangle("line", 50, (key*10)+((key-1)*70)+ 130, 300, 70)
+		love.graphics.setColor(0, 0, 0, 255)
+		if value:sub(1,value:len()-4):len() < 10 then
+			love.graphics.print(value:sub(1,value:len()-4), 70, (key*10)+((key-1)*70)+ 130, 0, 0.7, 0.7)
+		else
+			love.graphics.print(value:sub(1,7) .. "...", 70, (key*10)+((key-1)*70)+ 130, 0, 0.7, 0.7)
+		end
+	end
+	love.graphics.setColor(255, 255, 255, 255)
 end

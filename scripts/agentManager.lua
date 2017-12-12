@@ -46,7 +46,7 @@ function agentManager.update(dt)																								--This is the update pro
 			 	end
 			end
 
-			if agentManager.selectedAgent ~= 0 then
+			if agentManager.selectedAgent > 0 then
 				agentManager.timeSinceAIUpdate = agentManager.timeSinceAIUpdate + 1
 				if agentManager.timeSinceAIUpdate >= 0.5 then
 					pathfind.find(math.floor(agent_positionX[agentManager.enemyPicked]),math.floor(agent_positionY[agentManager.enemyPicked]),math.floor(agent_positionX[agentManager.selectedAgent]),math.floor(agent_positionY[agentManager.selectedAgent]),agentManager.enemyPicked)
@@ -109,8 +109,10 @@ function agentManager.drawAgents()																							--This function draws t
 			if agent_type[agent] == "player" then																			--This statement runs if the agent type is an active player.
 				love.graphics.draw(sprite[0],(agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX, (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY, agent_rotation[agent], map_scaleX, map_scaleY, 17, 17)						--This line draws the agent at the desired position with thr anchor offset to the centre of the agent (this will aid in working out the agent's position)
 				love.graphics.draw(sprite[1],(agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX, (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY, agent_rotation[agent], map_scaleX, map_scaleY, 6.5, 14.5)					--This line simply adds a debug arrow which represents the direction the agent is facing.
-				love.graphics.setColor(0, 255, 0, 255)																	--This procedure changes the colour of objects drawn.
-				love.graphics.rectangle("line", agent_collider_x1[agent], agent_collider_y1[agent], 34 * map_scaleX, 34 * map_scaleY)		--This draws the rectangle surrounding the agent showing its collision box.
+				if debug_player then
+					love.graphics.setColor(0, 255, 0, 255)																	--This procedure changes the colour of objects drawn.
+					love.graphics.rectangle("line", agent_collider_x1[agent], agent_collider_y1[agent], 34 * map_scaleX, 34 * map_scaleY)		--This draws the rectangle surrounding the agent showing its collision box.
+				end
 				love.graphics.setColor(255, 255, 255, 255)															--Resetting the colour
 			elseif agent_type[agent] == "Inactiveplayer" then													--This statement is for drawing the players that are 'inactive' - the ghost players.
 				if agent_positionX[agent] == nil then																		--This is here for debugging purposes. If any of the values are undefined then the program will print the variable name and its assigned value - this helps determine which variable is undefined.
@@ -129,20 +131,26 @@ function agentManager.drawAgents()																							--This function draws t
 				y_pos = (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY
 				love.graphics.draw(sprite[2], x_pos, y_pos, 0, map_scaleX, map_scaleY, 17, 17)						--This line draws the ghost agent at the desired position with the anchor offset to the centre of the agent (this will aid in working out the agent's position)
 				love.graphics.draw(sprite[1],(agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX, (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY, agent_rotation[agent], map_scaleX, map_scaleY, 6.5, 14.5)					--This line simply adds a debug arrow which represents the direction the agent is facing.
-				love.graphics.setColor(0, 255, 0, 255)
-				love.graphics.rectangle("line", agent_collider_x1[agent], agent_collider_y1[agent], 34 * map_scaleX, 34 * map_scaleY)		--This draws the rectangle surrounding the agent showing its collision box.
+				if debug_player then
+					love.graphics.setColor(0, 255, 0, 255)
+					love.graphics.rectangle("line", agent_collider_x1[agent], agent_collider_y1[agent], 34 * map_scaleX, 34 * map_scaleY)		--This draws the rectangle surrounding the agent showing its collision box.
+				end
 				love.graphics.setColor(255, 255, 255, 255)
 			elseif agent_type[agent] == "enemy" then																	--This repeats the first if statement in this procedure however does so with the drawable changed to an enemy.
 				love.graphics.draw(sprite[3],(agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX, (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY, agent_rotation[agent], map_scaleX, map_scaleY, 17, 17)						--This line draws the agent at the desired position with thr anchor offset to the centre of the agent (this will aid in working out the agent's position)
 				love.graphics.draw(sprite[1],(agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX, (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY, agent_rotation[agent], map_scaleX, map_scaleY, 6.5, 14.5)					--This line simply adds a debug arrow which represents the direction the agent is facing.
-				love.graphics.setColor(0, 255, 0, 255)
-				love.graphics.rectangle("line", agent_collider_x1[agent], agent_collider_y1[agent], 34 * map_scaleX, 34 * map_scaleY)
+				if debug_player then
+					love.graphics.setColor(0, 255, 0, 255)
+					love.graphics.rectangle("line", agent_collider_x1[agent], agent_collider_y1[agent], 34 * map_scaleX, 34 * map_scaleY)
+				end
 				love.graphics.setColor(255, 255, 255, 255)
 			elseif agent_type[agent] == "InactiveEnemy" then													--This is another repeat however the drawable is changed to a ghost enemy agent.
 				love.graphics.draw(sprite[4],(agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX, (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY, agent_rotation[agent], map_scaleX, map_scaleY, 17, 17)						--This line draws the agent at the desired position with thr anchor offset to the centre of the agent (this will aid in working out the agent's position)
 				love.graphics.draw(sprite[1],(agent_positionX[agent]-1)*(tile_width * map_scaleX) + map_offsetX, (agent_positionY[agent]-1)*(tile_height * map_scaleY) + map_offsetY, agent_rotation[agent], map_scaleX, map_scaleY, 6.5, 14.5)					--This line simply adds a debug arrow which represents the direction the agent is facing.
-				love.graphics.setColor(0, 255, 0, 255)
-				love.graphics.rectangle("line", agent_collider_x1[agent], agent_collider_y1[agent], 34 * map_scaleX, 34 * map_scaleY)
+				if debug_player then
+					love.graphics.setColor(0, 255, 0, 255)
+					love.graphics.rectangle("line", agent_collider_x1[agent], agent_collider_y1[agent], 34 * map_scaleX, 34 * map_scaleY)
+				end
 				love.graphics.setColor(255, 255, 255, 255)
 			else
 				print("Can't draw agent type: " .. agent_type[agent])										--This is a debug message, if the agent type is not valid.
@@ -322,6 +330,7 @@ function agentManager.Shoot(agent)
 end
 
 function clearSightLine(agent, target)
+	if agent > 0 and target > 0 then
 		sourceX = agent_positionX[agent]
 		sourceY = agent_positionY[agent]
 
@@ -372,6 +381,7 @@ function clearSightLine(agent, target)
 			end
 		end
 		return clear
+	end
 end
 
 function MapToX(x)
